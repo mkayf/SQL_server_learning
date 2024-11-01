@@ -25,6 +25,29 @@ create table orders(
 	o_amount int
 )
 
+create table employees(
+	e_ID int primary key identity,
+	e_name varchar(120),
+	e_salary int,
+	e_hiredate date
+)
+
+insert into employees values ('Kayf', 50000, '2022-11-24'),
+('Samad', 60000, '2023-07-05'),
+('Atiq', 40000, '2021-05-17'),
+('Salman', 70000, '2022-01-10'),
+('Zarhan', 35000, '2023-10-20'),
+('Hamza', 45000, '2021-03-02'),
+('Ahsan', 75000, '2023-08-06'),
+('Azmeer', 25000, '2023-12-30'),
+('Noman', 55000, '2024-07-06'),
+('Ali', 65000, '2023-06-10'),
+('Imtiaz', 75000, '2020-01-23'),
+('Anwar', 80000, '2020-04-19')
+
+
+
+
 -- question 1 - sales report with rollup and having
 
 select coalesce(p_name, 'Grand') as product_name, coalesce(s_region, 'Total') as Region, sum(s_amount) as total_sales from sales
@@ -54,3 +77,22 @@ select * from TopSellingProducts
 -- question 4 - stored procedure for monthly sales
 
 select * from sales
+
+alter procedure GetMonthlySales
+@year varchar(4)
+with encryption
+as
+begin
+	select s_date as Sale_date, sum(s_amount) as sale_amount from sales
+	where s_date like @year + '%'
+	group by rollup(s_date)
+end
+
+exec GetMonthlySales '2023'
+
+
+-- question 5 - Filter results with TOP and BETWEEN
+
+select top 5 e_name, e_salary, e_hiredate from employees
+where e_hiredate between '2020-01-01' and '2022-12-31'
+order by e_salary desc
